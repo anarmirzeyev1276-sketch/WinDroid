@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 / PrivChro</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #001f3f url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .desktop { flex: 1; padding: 20px; display: flex; gap: 20px; flex-wrap: wrap; }
+        .icon {
+            width: 80px; text-align: center; color: white; cursor: pointer;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+        .icon img { width: 48px; height: 48px; display: block; margin: 0 auto 5px; }
+        .taskbar {
+            height: 48px; background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px); display: flex; align-items: center; padding: 0 10px; gap: 10px;
+        }
+        .start-btn { background: none; border: none; cursor: pointer; }
+        .start-btn img { width: 32px; height: 32px; }
+        
+        /* Store & File Manager Windows */
+        .window {
+            position: absolute; top: 10%; left: 10%; width: 80%; height: 80%;
+            background: #202020; color: white; border-radius: 8px; display: none;
+            flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .window-header {
+            background: #2d2d2d; padding: 10px; display: flex; justify-content: space-between; align-items: center;
+            border-top-left-radius: 8px; border-top-right-radius: 8px;
+        }
+        .window-body { flex: 1; padding: 15px; overflow-y: auto; }
+        .close-btn { background: #e81123; border: none; color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        
+        /* Context Menu for .pkg */
+        .context-menu {
+            position: absolute; display: none; background: #333; color: white;
+            border: 1px: solid #555; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 1000;
+        }
+        .context-menu div { padding: 8px 15px; cursor: pointer; }
+        .context-menu div:hover { background: #007acc; }
+    </style>
+</head>
+<body>
+
+    <div class="desktop">
+        <!-- Google Chrome Icon -->
+        <div class="icon" onclick="openChrome()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Google_Chrome_icon_%282011-2014%29.png" alt="Chrome">
+            <span>Chrome</span>
+        </div>
+        <!-- Windows Store Icon -->
+        <div class="icon" onclick="openStore()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Microsoft_Store_%282012%E2%80%932019%29.svg" alt="Store">
+            <span>Store</span>
+        </div>
+        <!-- File Manager Icon -->
+        <div class="icon" onclick="openFileManager()">
+            <img src="https://img.icons8.com/fluency/48/folder-invoices.png" alt="Files">
+            <span>Fayllar</span>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-btn" onclick="openStore()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c9/Windows_logo_%282012%29.svg" alt="Start">
+        </button>
+    </div>
+
+    <!-- Generic Window -->
+    <div id="appWindow" class="window">
+        <div class="window-header">
+            <span id="winTitle">Pəncərə</span>
+            <button class="close-btn" onclick="closeWindow()">X</button>
+        </div>
+        <div class="window-body" id="winBody">
+            <!-- Content injected dynamically -->
+        </div>
+    </div>
+
+    <!-- .pkg Context Menu -->
+    <div id="pkgMenu" class="context-menu">
+        <div onclick="setWallpaper()">Wallpaper et</div>
+        <div onclick="deleteFile()">Sil</div>
+    </div>
+
+    <script>
+        function openChrome() {
+            document.getElementById('winTitle').innerText = "Google Chrome (Chromium)";
+            document.getElementById('winBody').innerHTML = '<iframe src="https://www.google.com" style="width:100%; height:100%; border:none;"></iframe>';
+            document.getElementById('appWindow').style.display = 'flex';
+        }
+
+        function openStore() {
+            document.getElementById('winTitle').innerText = "Windows Store";
+            document.getElementById('winBody').innerHTML = `
+                <h3>Real Windows Tətbiqləri</h3>
+                <p>WhatsApp, Spotify, Telegram yükləyə bilərsiniz.</p>
+                <button onclick="alert('Tətbiq yükləndi!')" style="padding:10px; background:#007acc; color:white; border:none; cursor:pointer;">WhatsApp Yüklə</button>
+            `;
+            document.getElementById('appWindow').style.display = 'flex';
+        }
+
+        function openFileManager() {
+            document.getElementById('winTitle').innerText = "Fayl İdarəçisi";
+            document.getElementById('winBody').innerHTML = `
+                <h3>Fayllar</h3>
+                <div oncontextmenu="showPkgMenu(event)" style="padding:10px; background:#333; margin-top:5px; cursor:pointer;">
+                    oyun_testi.pkg (Basıb saxlayın və ya sağ klik edin)
+                </div>
+            `;
+            document.getElementById('appWindow').style.display = 'flex';
+        }
+
+        function closeWindow() {
+            document.getElementById('appWindow').style.display = 'none';
+        }
+
+        let menu = document.getElementById('pkgMenu');
+        function showPkgMenu(e) {
+            e.preventDefault();
+            menu.style.display = 'block';
+            menu.style.top = e.clientY + 'px';
+            menu.style.left = e.clientX + 'px';
+        }
+
+        window.onclick = function() {
+            menu.style.display = 'none';
+        }
+
+        function setWallpaper() {
+            alert("Wallpaper dəyişdirildi!");
+        }
+
+        function deleteFile() {
+            alert("Fayl silindi!");
+        }
+    </script>
+</body>
+</html>
