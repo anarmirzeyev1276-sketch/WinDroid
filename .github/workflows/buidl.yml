@@ -1,0 +1,38 @@
+name: Build Windows V1 APK
+
+on:
+  push:
+    tags:
+      - 'Windows-V1'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Dummy APK
+        run: |
+          mkdir -p build/outputs/apk/release
+          touch build/outputs/apk/release/Windows-V1.apk
+
+      - name: Create GitHub Release & Upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: Windows-V1
+          name: Windows V1 Release
+          files: |
+            build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
